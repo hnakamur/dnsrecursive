@@ -1,4 +1,4 @@
-package recursive
+package dnsrecursive
 
 import "fmt"
 

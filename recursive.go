@@ -1,8 +1,8 @@
 // Copyright (c) Tailscale Inc & AUTHORS
 // SPDX-License-Identifier: BSD-3-Clause
 
-// Package recursive implements a simple recursive DNS resolver.
-package recursive
+// Package dnsrecursive implements a simple recursive DNS resolver.
+package dnsrecursive
 
 import (
 	"context"
