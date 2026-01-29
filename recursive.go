@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/miekg/dns"
-	"tailscale.com/net/netns"
 	"tailscale.com/types/logger"
 	"tailscale.com/util/dnsname"
 )
@@ -91,11 +90,15 @@ var rootServersV6 = []netip.Addr{
 	netip.MustParseAddr("2001:dc3::35"),        // m.root-servers.net
 }
 
+type DialContexter interface {
+	DialContext(ctx context.Context, network, address string) (net.Conn, error)
+}
+
 // Resolver is a recursive DNS resolver that is designed for looking up A and AAAA records.
 type Resolver struct {
 	// Dialer is used to create outbound connections. If nil, a zero
 	// net.Dialer will be used instead.
-	Dialer netns.Dialer
+	Dialer DialContexter
 
 	// Logf is the logging function to use; if none is specified, then logs
 	// will be dropped.
@@ -168,7 +171,7 @@ func (r *Resolver) depthlogf(depth int, format string, args ...any) {
 
 var defaultDialer net.Dialer
 
-func (r *Resolver) dialer() netns.Dialer {
+func (r *Resolver) dialer() DialContexter {
 	if r.Dialer != nil {
 		return r.Dialer
 	}
