@@ -44,6 +44,8 @@ func wrapLogf(logf func(format string, args ...any)) func(ctx context.Context, l
 
 		var b strings.Builder
 		switch level {
+		case slog.LevelDebug:
+			b.WriteString("[Debug] ")
 		case slog.LevelInfo:
 			b.WriteString("[Info] ")
 		case slog.LevelWarn:

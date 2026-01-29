@@ -407,6 +407,13 @@ func (r *Resolver) resolveRecursive(
 	// authority server is a subdomain of what's being resolved.
 	glueRecords := make(map[FQDN][]netip.Addr)
 	for _, rr := range resp.Extra {
+		// Ignore OPT RR (used for EDNS0)
+		// https://pkg.go.dev/github.com/miekg/dns#hdr-EDNS0
+		if _, ok := rr.(*dns.OPT); ok {
+			r.logf(slog.LevelDebug, "skip OPT RR")
+			continue
+		}
+
 		name, err := ToFQDN(rr.Header().Name)
 		if err != nil {
 			r.logf(slog.LevelWarn, "unexpected bad Name in Extra addr", "name", rr.Header().Name, "err", err)
