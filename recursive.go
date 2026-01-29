@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/miekg/dns"
-	"tailscale.com/util/dnsname"
 )
 
 const (
@@ -108,7 +107,7 @@ type Resolver struct {
 	NoIPv6 bool
 
 	// Test mocks
-	testQueryHook    func(name dnsname.FQDN, nameserver netip.Addr, protocol string, qtype dns.Type) (*dns.Msg, error)
+	testQueryHook    func(name FQDN, nameserver netip.Addr, protocol string, qtype dns.Type) (*dns.Msg, error)
 	testExchangeHook func(nameserver netip.Addr, network string, msg *dns.Msg) (*dns.Msg, error)
 	rootServers      []netip.Addr
 	timeNow          func() time.Time
@@ -133,7 +132,7 @@ type queryState struct {
 
 type dnsQuery struct {
 	nameserver netip.Addr
-	name       dnsname.FQDN
+	name       FQDN
 	qtype      dns.Type
 }
 
@@ -218,7 +217,7 @@ func (r *Resolver) newState() *queryState {
 // responses as a slice of netip.Addrs along with the minimum TTL for the
 // returned records.
 func (r *Resolver) Resolve(ctx context.Context, name string) (addrs []netip.Addr, minTTL time.Duration, err error) {
-	dnsName, err := dnsname.ToFQDN(name)
+	dnsName, err := ToFQDN(name)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -269,7 +268,7 @@ func (r *Resolver) resolveRecursiveFromRoot(
 	ctx context.Context,
 	qstate *queryState,
 	depth int,
-	name dnsname.FQDN, // what we're querying
+	name FQDN, // what we're querying
 	qtype dns.Type,
 ) ([]netip.Addr, time.Duration, error) {
 	r.depthlogf(depth, "resolving from root", "name", name, "type", qtype)
@@ -296,7 +295,7 @@ func (r *Resolver) resolveRecursive(
 	ctx context.Context,
 	qstate *queryState,
 	depth int,
-	name dnsname.FQDN, // what we're querying
+	name FQDN, // what we're querying
 	nameserver netip.Addr,
 	qtype dns.Type,
 ) ([]netip.Addr, time.Duration, error) {
@@ -314,12 +313,12 @@ func (r *Resolver) resolveRecursive(
 	// If we get an actual answer from the nameserver, then return it.
 	var (
 		answers []netip.Addr
-		cnames  []dnsname.FQDN
+		cnames  []FQDN
 		minTTL  = 24 * 60 * 60 // 24 hours in seconds
 	)
 	for _, answer := range resp.Answer {
 		if crec, ok := answer.(*dns.CNAME); ok {
-			cnameFQDN, err := dnsname.ToFQDN(crec.Target)
+			cnameFQDN, err := ToFQDN(crec.Target)
 			if err != nil {
 				r.logf("bad CNAME returned", "target", crec.Target, "err", err)
 				continue
@@ -387,14 +386,14 @@ func (r *Resolver) resolveRecursive(
 
 	// No CNAMEs and no answers; see if we got any AUTHORITY responses,
 	// which indicate which nameservers to query next.
-	var authorities []dnsname.FQDN
+	var authorities []FQDN
 	for _, rr := range resp.Ns {
 		ns, ok := rr.(*dns.NS)
 		if !ok {
 			continue
 		}
 
-		nsName, err := dnsname.ToFQDN(ns.Ns)
+		nsName, err := ToFQDN(ns.Ns)
 		if err != nil {
 			r.logf("unexpected bad NS name", "ns", ns.Ns, "err", err)
 			continue
@@ -406,9 +405,9 @@ func (r *Resolver) resolveRecursive(
 	// Also check for "glue" records, which are IP addresses provided by
 	// the DNS server for authority responses; these are required when the
 	// authority server is a subdomain of what's being resolved.
-	glueRecords := make(map[dnsname.FQDN][]netip.Addr)
+	glueRecords := make(map[FQDN][]netip.Addr)
 	for _, rr := range resp.Extra {
-		name, err := dnsname.ToFQDN(rr.Header().Name)
+		name, err := ToFQDN(rr.Header().Name)
 		if err != nil {
 			r.logf("unexpected bad Name in Extra addr", "name", rr.Header().Name, "err", err)
 			continue
@@ -423,7 +422,7 @@ func (r *Resolver) resolveRecursive(
 
 	// Try authorities with glue records first, to minimize the number of
 	// additional DNS queries that we need to make.
-	var authoritiesGlue, authoritiesNoGlue []dnsname.FQDN
+	var authoritiesGlue, authoritiesNoGlue []FQDN
 	for _, aa := range authorities {
 		if len(glueRecords[aa]) > 0 {
 			authoritiesGlue = append(authoritiesGlue, aa)
@@ -490,7 +489,7 @@ func (r *Resolver) resolveRecursive(
 func (r *Resolver) queryNameserver(
 	ctx context.Context,
 	depth int,
-	name dnsname.FQDN, // what we're querying
+	name FQDN, // what we're querying
 	nameserver netip.Addr, // destination of query
 	qtype dns.Type,
 ) (*dns.Msg, error) {
@@ -522,7 +521,7 @@ func (r *Resolver) queryNameserver(
 func (r *Resolver) queryNameserverProto(
 	ctx context.Context,
 	depth int,
-	name dnsname.FQDN, // what we're querying
+	name FQDN, // what we're querying
 	nameserver netip.Addr, // destination of query
 	protocol string,
 	qtype dns.Type,
