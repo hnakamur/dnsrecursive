@@ -18,7 +18,6 @@ import (
 	"tailscale.com/net/netns"
 	"tailscale.com/types/logger"
 	"tailscale.com/util/dnsname"
-	"tailscale.com/util/multierr"
 	"tailscale.com/util/slicesx"
 )
 
@@ -236,7 +235,7 @@ func (r *Resolver) Resolve(ctx context.Context, name string) (addrs []netip.Addr
 			return nil, 0, err4
 		}
 
-		return nil, 0, multierr.New(err4, err6)
+		return nil, 0, joinErrors(err4, err6)
 	}
 	if err4 != nil {
 		return addrs6, minTTL6, nil
@@ -501,7 +500,7 @@ func (r *Resolver) queryNameserver(
 		return msg, nil
 	}
 
-	return nil, multierr.New(err, err2)
+	return nil, joinErrors(err, err2)
 }
 
 // queryNameserverProto sends a query for "name" to the nameserver "nameserver"
@@ -618,4 +617,21 @@ func addrFromRecord(rr dns.RR) netip.Addr {
 		return ip
 	}
 	return netip.Addr{}
+}
+
+func joinErrors(errs ...error) error {
+	var lastErr error
+	n := 0
+	for _, e := range errs {
+		n++
+		lastErr = e
+	}
+	switch n {
+	case 0:
+		return nil
+	case 1:
+		return lastErr
+	default:
+		return errors.Join(errs...)
+	}
 }
