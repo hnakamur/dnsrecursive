@@ -41,9 +41,18 @@ func newResolver(tb testing.TB) *Resolver {
 func wrapLogf(logf func(format string, args ...any)) func(ctx context.Context, level slog.Level, msg string, args ...any) {
 	return func(ctx context.Context, level slog.Level, msg string, args ...any) {
 		_ = ctx
-		_ = level
 
 		var b strings.Builder
+		switch level {
+		case slog.LevelInfo:
+			b.WriteString("[Info] ")
+		case slog.LevelWarn:
+			b.WriteString("[Warn] ")
+		case slog.LevelError:
+			b.WriteString("[Error] ")
+		default:
+			b.WriteString("[Other] ")
+		}
 		b.WriteString(msg)
 		values := make([]any, 0, len(args)/2)
 		for i := 0; i < len(args)-1; i += 2 {

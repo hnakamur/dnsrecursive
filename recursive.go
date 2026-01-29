@@ -152,19 +152,19 @@ func (r *Resolver) now() time.Time {
 	return time.Now()
 }
 
-func (r *Resolver) logf(msg string, args ...any) {
+func (r *Resolver) logf(level slog.Level, msg string, args ...any) {
 	if r.Log == nil {
 		return
 	}
-	r.Log(context.Background(), slog.LevelInfo, msg, args...)
+	r.Log(context.Background(), level, msg, args...)
 }
 
-func (r *Resolver) depthlogf(depth int, msg string, args ...any) {
+func (r *Resolver) depthlogf(level slog.Level, depth int, msg string, args ...any) {
 	if r.Log == nil {
 		return
 	}
 	args2 := append([]any{"depth", depth}, args...)
-	r.Log(context.Background(), slog.LevelInfo, msg, args2...)
+	r.Log(context.Background(), level, msg, args2...)
 }
 
 var defaultDialer net.Dialer
@@ -224,7 +224,7 @@ func (r *Resolver) Resolve(ctx context.Context, name string) (addrs []netip.Addr
 
 	qstate := r.newState()
 
-	r.logf("querying IPv4 addresses", "name", name)
+	r.logf(slog.LevelInfo, "querying IPv4 addresses", "name", name)
 	addrs4, minTTL4, err4 := r.resolveRecursiveFromRoot(ctx, qstate, 0, dnsName, qtypeA)
 
 	var (
@@ -233,7 +233,7 @@ func (r *Resolver) Resolve(ctx context.Context, name string) (addrs []netip.Addr
 		err6    error
 	)
 	if !r.NoIPv6 {
-		r.logf("querying IPv6 addresses", "name", name)
+		r.logf(slog.LevelInfo, "querying IPv6 addresses", "name", name)
 		addrs6, minTTL6, err6 = r.resolveRecursiveFromRoot(ctx, qstate, 0, dnsName, qtypeAAAA)
 	}
 
@@ -271,7 +271,7 @@ func (r *Resolver) resolveRecursiveFromRoot(
 	name FQDN, // what we're querying
 	qtype dns.Type,
 ) ([]netip.Addr, time.Duration, error) {
-	r.depthlogf(depth, "resolving from root", "name", name, "type", qtype)
+	r.depthlogf(slog.LevelInfo, depth, "resolving from root", "name", name, "type", qtype)
 
 	var depthError bool
 	for _, server := range qstate.rootServers {
@@ -300,7 +300,7 @@ func (r *Resolver) resolveRecursive(
 	qtype dns.Type,
 ) ([]netip.Addr, time.Duration, error) {
 	if depth == maxDepth {
-		r.depthlogf(depth, "not recursing past maximum depth")
+		r.depthlogf(slog.LevelWarn, depth, "not recursing past maximum depth")
 		return nil, 0, ErrMaxDepth
 	}
 
@@ -320,7 +320,7 @@ func (r *Resolver) resolveRecursive(
 		if crec, ok := answer.(*dns.CNAME); ok {
 			cnameFQDN, err := ToFQDN(crec.Target)
 			if err != nil {
-				r.logf("bad CNAME returned", "target", crec.Target, "err", err)
+				r.logf(slog.LevelInfo, "bad CNAME returned", "target", crec.Target, "err", err)
 				continue
 			}
 
@@ -330,11 +330,11 @@ func (r *Resolver) resolveRecursive(
 
 		addr := addrFromRecord(answer)
 		if !addr.IsValid() {
-			r.logf("[unexpected] invalid record in answer", "type", fmt.Sprintf("%T", answer))
+			r.logf(slog.LevelWarn, "[unexpected] invalid record in answer", "type", fmt.Sprintf("%T", answer))
 		} else if addr.Is4() && qtype != qtypeA {
-			r.logf("[unexpected] got IPv4 answer but unexpected qtype", "qtype", qtype)
+			r.logf(slog.LevelWarn, "[unexpected] got IPv4 answer but unexpected qtype", "qtype", qtype)
 		} else if addr.Is6() && qtype != qtypeAAAA {
-			r.logf("[unexpected] got IPv6 answer but unexpected qtype", "qtype", qtype)
+			r.logf(slog.LevelWarn, "[unexpected] got IPv6 answer but unexpected qtype", "qtype", qtype)
 		} else {
 			answers = append(answers, addr)
 			minTTL = min(minTTL, int(answer.Header().Ttl))
@@ -342,11 +342,11 @@ func (r *Resolver) resolveRecursive(
 	}
 
 	if len(answers) > 0 {
-		r.depthlogf(depth, "got answers for name", "name", name, "answers", answers)
+		r.depthlogf(slog.LevelInfo, depth, "got answers for name", "name", name, "answers", answers)
 		return answers, time.Duration(minTTL) * time.Second, nil
 	}
 
-	r.depthlogf(depth, "no answers for name", "name", name)
+	r.depthlogf(slog.LevelInfo, depth, "no answers for name", "name", name)
 
 	// If we have a non-zero number of CNAMEs, then try resolving those
 	// (from the root again) and return the first one that succeeds.
@@ -354,7 +354,7 @@ func (r *Resolver) resolveRecursive(
 	// TODO: return the union of all responses?
 	// TODO: parallelism?
 	if len(cnames) > 0 {
-		r.depthlogf(depth, "got CNAME responses for name", "name", name, "cnames", cnames)
+		r.depthlogf(slog.LevelInfo, depth, "got CNAME responses for name", "name", name, "cnames", cnames)
 	}
 	var cnameDepthError bool
 	for _, cname := range cnames {
@@ -378,11 +378,11 @@ func (r *Resolver) resolveRecursive(
 			return nil, 0, ErrMaxDepth
 		}
 
-		r.depthlogf(depth, "got authoritative response with no answers; stopping")
+		r.depthlogf(slog.LevelWarn, depth, "got authoritative response with no answers; stopping")
 		return nil, 0, ErrAuthoritativeNoResponses
 	}
 
-	r.depthlogf(depth, "got NS responses and ADDITIONAL responses for name", "nsCount", len(resp.Ns), "extraCount", len(resp.Extra), "name", name)
+	r.depthlogf(slog.LevelInfo, depth, "got NS responses and ADDITIONAL responses for name", "nsCount", len(resp.Ns), "extraCount", len(resp.Extra), "name", name)
 
 	// No CNAMEs and no answers; see if we got any AUTHORITY responses,
 	// which indicate which nameservers to query next.
@@ -395,7 +395,7 @@ func (r *Resolver) resolveRecursive(
 
 		nsName, err := ToFQDN(ns.Ns)
 		if err != nil {
-			r.logf("unexpected bad NS name", "ns", ns.Ns, "err", err)
+			r.logf(slog.LevelWarn, "unexpected bad NS name", "ns", ns.Ns, "err", err)
 			continue
 		}
 
@@ -409,14 +409,14 @@ func (r *Resolver) resolveRecursive(
 	for _, rr := range resp.Extra {
 		name, err := ToFQDN(rr.Header().Name)
 		if err != nil {
-			r.logf("unexpected bad Name in Extra addr", "name", rr.Header().Name, "err", err)
+			r.logf(slog.LevelWarn, "unexpected bad Name in Extra addr", "name", rr.Header().Name, "err", err)
 			continue
 		}
 
 		if addr := addrFromRecord(rr); addr.IsValid() {
 			glueRecords[name] = append(glueRecords[name], addr)
 		} else {
-			r.logf("unexpected bad Extra addr", "type", fmt.Sprintf("%T", rr))
+			r.logf(slog.LevelWarn, "unexpected bad Extra addr", "type", fmt.Sprintf("%T", rr))
 		}
 	}
 
@@ -433,7 +433,7 @@ func (r *Resolver) resolveRecursive(
 
 	authorityDepthError := false
 
-	r.depthlogf(depth, "authorities with glue records for recursion", "authoritiesGlue", authoritiesGlue)
+	r.depthlogf(slog.LevelInfo, depth, "authorities with glue records for recursion", "authoritiesGlue", authoritiesGlue)
 	for _, authority := range authoritiesGlue {
 		for _, nameserver := range glueRecords[authority] {
 			answers, minTTL, err := r.resolveRecursive(ctx, qstate, depth+1, name, nameserver, qtype)
@@ -447,7 +447,7 @@ func (r *Resolver) resolveRecursive(
 		}
 	}
 
-	r.depthlogf(depth, "authorities with no glue records for recursion", "authoritiesNoGlue", authoritiesNoGlue)
+	r.depthlogf(slog.LevelInfo, depth, "authorities with no glue records for recursion", "authoritiesNoGlue", authoritiesNoGlue)
 	for _, authority := range authoritiesNoGlue {
 		// First, resolve the IP for the authority server from the
 		// root, querying for both IPv4 and IPv6 addresses regardless
@@ -458,10 +458,10 @@ func (r *Resolver) resolveRecursive(
 		for _, authorityQtype := range []dns.Type{qtypeAAAA, qtypeA} {
 			answers, _, err := r.resolveRecursiveFromRoot(ctx, qstate, depth+1, authority, authorityQtype)
 			if err != nil {
-				r.depthlogf(depth, "error querying authority", "authority", authority, "err", err)
+				r.depthlogf(slog.LevelInfo, depth, "error querying authority", "authority", authority, "err", err)
 				continue
 			}
-			r.depthlogf(depth, "resolved authority", authority, "qtype", authorityQtype, "answers", answers)
+			r.depthlogf(slog.LevelInfo, depth, "resolved authority", authority, "qtype", authorityQtype, "answers", answers)
 
 			// Now, query this authority for the final address.
 			for _, nameserver := range answers {
@@ -540,7 +540,7 @@ func (r *Resolver) queryNameserverProto(
 	}
 	cacheEntry, ok := r.queryCache[cacheKey]
 	if ok && cacheEntry.expiresAt.Before(now) {
-		r.depthlogf(depth, "using cached response from nameserver", "nameserver", nameserverStr, "name", name, "qtype", qtype)
+		r.depthlogf(slog.LevelInfo, depth, "using cached response from nameserver", "nameserver", nameserverStr, "name", name, "qtype", qtype)
 		return cacheEntry.Msg, nil
 	}
 
@@ -575,7 +575,7 @@ func (r *Resolver) queryNameserverProto(
 		}
 
 		// Send the DNS request to the current nameserver.
-		r.depthlogf(depth, "asking to the current nameserver", "nameserver", nameserverStr, "protocol", protocol, "name", name, "qtype", qtype)
+		r.depthlogf(slog.LevelInfo, depth, "asking to the current nameserver", "nameserver", nameserverStr, "protocol", protocol, "name", name, "qtype", qtype)
 		resp, _, err = c.ExchangeWithConnContext(ctx, m, conn)
 	}
 	if err != nil {
@@ -584,7 +584,7 @@ func (r *Resolver) queryNameserverProto(
 
 	// If the message was truncated and we're using UDP, re-run with TCP.
 	if resp.MsgHdr.Truncated && protocol == "udp" {
-		r.depthlogf(depth, "response message truncated; re-running query with TCP")
+		r.depthlogf(slog.LevelInfo, depth, "response message truncated; re-running query with TCP")
 		resp, err = r.queryNameserverProto(ctx, depth, name, nameserver, "tcp", qtype)
 		if err != nil {
 			return nil, err
