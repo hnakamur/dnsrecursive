@@ -19,7 +19,6 @@ import (
 	"slices"
 
 	"github.com/miekg/dns"
-	"tailscale.com/tstest"
 )
 
 const testDomain = "tailscale.com"
@@ -33,12 +32,9 @@ const complicatedTestDomain = "console.aws.amazon.com"
 var flagNetworkAccess = flag.Bool("enable-network-access", false, "run tests that need external network access")
 
 func newResolver(tb testing.TB) *Resolver {
-	clock := tstest.NewClock(tstest.ClockOpts{
-		Step: 50 * time.Millisecond,
-	})
 	return &Resolver{
 		Log:     wrapLogf(tb.Logf),
-		timeNow: clock.Now,
+		timeNow: time.Now,
 	}
 }
 
