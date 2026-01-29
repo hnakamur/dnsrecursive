@@ -18,7 +18,6 @@ import (
 	"tailscale.com/net/netns"
 	"tailscale.com/types/logger"
 	"tailscale.com/util/dnsname"
-	"tailscale.com/util/mak"
 	"tailscale.com/util/multierr"
 	"tailscale.com/util/slicesx"
 )
@@ -593,10 +592,13 @@ func (r *Resolver) queryNameserverProto(
 		minTTL = min(minTTL, int(rr.Header().Ttl))
 	}
 
-	mak.Set(&r.queryCache, cacheKey, dnsMsgWithExpiry{
+	if r.queryCache == nil {
+		r.queryCache = make(map[dnsQuery]dnsMsgWithExpiry)
+	}
+	r.queryCache[cacheKey] = dnsMsgWithExpiry{
 		Msg:       resp,
 		expiresAt: now.Add(time.Duration(minTTL) * time.Second),
-	})
+	}
 	return resp, nil
 }
 
