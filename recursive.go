@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand/v2"
 	"net"
 	"net/netip"
 	"slices"
@@ -18,7 +19,6 @@ import (
 	"tailscale.com/net/netns"
 	"tailscale.com/types/logger"
 	"tailscale.com/util/dnsname"
-	"tailscale.com/util/slicesx"
 )
 
 const (
@@ -185,19 +185,25 @@ func (r *Resolver) newState() *queryState {
 		// we don't get responses from those, something else has probably gone
 		// horribly wrong.
 		roots4 := slices.Clone(rootServersV4)
-		slicesx.Shuffle(roots4)
+		shuffleAddresses(roots4)
 		roots4 = roots4[:numStartingServers]
 
 		var roots6 []netip.Addr
 		if !r.NoIPv6 {
 			roots6 = slices.Clone(rootServersV6)
-			slicesx.Shuffle(roots6)
+			shuffleAddresses(roots6)
 			roots6 = roots6[:numStartingServers]
 		}
 
 		// Interleave the root servers so that we try to contact them over
 		// IPv4, then IPv6, IPv4, IPv6, etc.
-		rootServers = slicesx.Interleave(roots4, roots6)
+		rootServers = make([]netip.Addr, len(roots4)+len(roots6))
+		i := 0
+		for ; i < min(len(roots4), len(roots6)); i++ {
+			rootServers = append(rootServers, roots4[i], roots6[i])
+		}
+		rootServers = append(rootServers, roots4[i:]...)
+		rootServers = append(rootServers, roots6[i:]...)
 	}
 
 	return &queryState{
@@ -253,7 +259,7 @@ func (r *Resolver) Resolve(ctx context.Context, name string) (addrs []netip.Addr
 		return nil, 0, ErrNoResponses
 	}
 
-	slicesx.Shuffle(addrs)
+	shuffleAddresses(addrs)
 	return addrs, minTTL, nil
 }
 
@@ -415,9 +421,14 @@ func (r *Resolver) resolveRecursive(
 
 	// Try authorities with glue records first, to minimize the number of
 	// additional DNS queries that we need to make.
-	authoritiesGlue, authoritiesNoGlue := slicesx.Partition(authorities, func(aa dnsname.FQDN) bool {
-		return len(glueRecords[aa]) > 0
-	})
+	var authoritiesGlue, authoritiesNoGlue []dnsname.FQDN
+	for _, aa := range authorities {
+		if len(glueRecords[aa]) > 0 {
+			authoritiesGlue = append(authoritiesGlue, aa)
+		} else {
+			authoritiesNoGlue = append(authoritiesNoGlue, aa)
+		}
+	}
 
 	authorityDepthError := false
 
@@ -634,4 +645,10 @@ func joinErrors(errs ...error) error {
 	default:
 		return errors.Join(errs...)
 	}
+}
+
+func shuffleAddresses(addrs []netip.Addr) {
+	rand.Shuffle(len(addrs), func(i, j int) {
+		addrs[i], addrs[j] = addrs[j], addrs[i]
+	})
 }
