@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/miekg/dns"
-	"tailscale.com/envknob"
 	"tailscale.com/net/netns"
 	"tailscale.com/types/logger"
 	"tailscale.com/util/dnsname"
@@ -94,8 +93,6 @@ var rootServersV6 = []netip.Addr{
 	netip.MustParseAddr("2001:dc3::35"),        // m.root-servers.net
 }
 
-var debug = envknob.RegisterBool("TS_DEBUG_RECURSIVE_DNS")
-
 // Resolver is a recursive DNS resolver that is designed for looking up A and AAAA records.
 type Resolver struct {
 	// Dialer is used to create outbound connections. If nil, a zero
@@ -164,7 +161,7 @@ func (r *Resolver) logf(format string, args ...any) {
 }
 
 func (r *Resolver) depthlogf(depth int, format string, args ...any) {
-	if r.Logf == nil || !debug() {
+	if r.Logf == nil {
 		return
 	}
 	prefix := fmt.Sprintf("[%d] %s", depth, strings.Repeat("  ", depth))

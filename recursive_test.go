@@ -18,7 +18,6 @@ import (
 	"slices"
 
 	"github.com/miekg/dns"
-	"tailscale.com/envknob"
 	"tailscale.com/tstest"
 )
 
@@ -31,10 +30,6 @@ const testDomain = "tailscale.com"
 const complicatedTestDomain = "console.aws.amazon.com"
 
 var flagNetworkAccess = flag.Bool("enable-network-access", false, "run tests that need external network access")
-
-func init() {
-	envknob.Setenv("TS_DEBUG_RECURSIVE_DNS", "true")
-}
 
 func newResolver(tb testing.TB) *Resolver {
 	clock := tstest.NewClock(tstest.ClockOpts{
