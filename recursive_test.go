@@ -8,6 +8,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/netip"
 	"reflect"
@@ -36,8 +37,25 @@ func newResolver(tb testing.TB) *Resolver {
 		Step: 50 * time.Millisecond,
 	})
 	return &Resolver{
-		Logf:    tb.Logf,
+		Log:     wrapLogf(tb.Logf),
 		timeNow: clock.Now,
+	}
+}
+
+func wrapLogf(logf func(format string, args ...any)) func(ctx context.Context, level slog.Level, msg string, args ...any) {
+	return func(ctx context.Context, level slog.Level, msg string, args ...any) {
+		_ = ctx
+		_ = level
+
+		var b strings.Builder
+		b.WriteString(msg)
+		values := make([]any, 0, len(args)/2)
+		for i := 0; i < len(args)-1; i += 2 {
+			fmt.Fprintf(&b, ", %s=%%v", args[i])
+			values = append(values, args[i+1])
+		}
+		format := b.String()
+		logf(format, values...)
 	}
 }
 
@@ -406,7 +424,7 @@ func TestNoAnswers(t *testing.T) {
 	}
 
 	r := &Resolver{
-		Logf:             t.Logf,
+		Log:              wrapLogf(t.Logf),
 		testExchangeHook: mock.exchangeHook,
 		rootServers:      []netip.Addr{rootServerAddr},
 	}
@@ -467,7 +485,7 @@ func TestRecursionCNAME(t *testing.T) {
 	}
 
 	r := &Resolver{
-		Logf:             t.Logf,
+		Log:              wrapLogf(t.Logf),
 		testExchangeHook: mock.exchangeHook,
 		rootServers:      []netip.Addr{rootServerAddr},
 	}
@@ -714,7 +732,7 @@ func TestInvalidResponses(t *testing.T) {
 	}
 
 	r := &Resolver{
-		Logf:             t.Logf,
+		Log:              wrapLogf(t.Logf),
 		testExchangeHook: mock.exchangeHook,
 		rootServers:      []netip.Addr{rootServerAddr},
 	}
