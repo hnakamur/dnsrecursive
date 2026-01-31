@@ -32,10 +32,6 @@ type Exchanger interface {
 	Exchange(ctx context.Context, m *dns.Msg, network, address string) (r *dns.Msg, rtt time.Duration, err error)
 }
 
-type Logger interface {
-	Log(ctx context.Context, level slog.Level, msg string, args ...any)
-}
-
 type Option func(r *Resolver2)
 
 type Resolver2 struct {
@@ -54,6 +50,11 @@ func NewResolver2(exchanger Exchanger, rootNameservers []netip.Addr, opts ...Opt
 		opt(r)
 	}
 	return r
+}
+
+type Logger interface {
+	Log(ctx context.Context, level slog.Level, msg string, args ...any)
+	Enabled(ctx context.Context, level slog.Level) bool
 }
 
 func WithLogger(logger Logger) Option {
@@ -82,27 +83,19 @@ func (q *query) MarshalJSON() ([]byte, error) {
 	return json.Marshal(query)
 }
 
-type queryResultKind int
-
-const (
-	queryResultKindFailed queryResultKind = iota
-	queryResultKindGotAuthoritativeAnswer
-	queryResultKindGotAuthorityWithoutExtra
-)
-
 func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns.RR, error) {
 	// do the requested query from root servers.
 	q := &query{Name: name, QType: dns.StringToType[qType]}
 	c.info(ctx, "LookupRecord start first round", "query", q)
 
-	r, k, err := c.lookupRecursiveMulti(ctx, 0, q, c.rootNameservers)
+	r, err := c.lookupRecursiveMulti(ctx, 0, q, c.rootNameservers)
 	if err != nil {
 		return nil, err
 	}
-	if k == queryResultKindGotAuthoritativeAnswer {
+	if r.Authoritative {
 		return r.Answer, nil
 	}
-	if k != queryResultKindGotAuthorityWithoutExtra {
+	if len(r.Ns) == 0 {
 		return nil, errors.New("failed to get target query result nor authority nameserver names")
 	}
 
@@ -115,22 +108,22 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	nsQuery := &query{Name: firstNs.Ns, QType: dns.TypeA}
 	c.info(ctx, "LookupRecord start querying address of authority nameservers", "query", q, "nsQuery", nsQuery)
 
-	r2, k2, err := c.lookupRecursiveMulti(ctx, 0, nsQuery, c.rootNameservers)
+	r2, err := c.lookupRecursiveMulti(ctx, 0, nsQuery, c.rootNameservers)
 	if err != nil {
 		return nil, err
 	}
-	if k2 != queryResultKindGotAuthoritativeAnswer {
+	if !r2.Authoritative {
 		return nil, errors.New("failed to get authority nameserver addresses for query")
 	}
 
 	// do the requested query to authority nameservers.
 	nsAddrs := getAddressesFromRRSet(r2.Answer)
 	c.info(ctx, "LookupRecord start querying to authority nameserver", "query", q, "nsAddrs", nsAddrs)
-	r3, k3, err := c.lookupRecursiveMulti(ctx, 0, q, nsAddrs)
+	r3, err := c.lookupRecursiveMulti(ctx, 0, q, nsAddrs)
 	if err != nil {
 		return nil, err
 	}
-	if k3 != queryResultKindGotAuthoritativeAnswer {
+	if !r3.Authoritative {
 		return nil, errors.New("failed to get query result from authority nameserver")
 	}
 
@@ -143,38 +136,38 @@ type recursePosition struct {
 	Count int `json:"count"`
 }
 
-func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, depth int, query *query, nameservers []netip.Addr) (*dns.Msg, queryResultKind, error) {
+func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, depth int, query *query, nameservers []netip.Addr) (*dns.Msg, error) {
 	pos := &recursePosition{
 		Depth: depth,
 		Count: len(nameservers),
 	}
 	for i, ns := range nameservers {
 		pos.Index = i
-		r, k, err := c.lookupRecursiveOne(ctx, pos, query, ns)
+		r, err := c.lookupRecursiveOne(ctx, pos, query, ns)
 		if err != nil {
 			c.warn(ctx, "lookup failed on one nameserver", "query", query, "nameserver", ns, "err", err)
 			continue
 		}
-		return r, k, nil
+		return r, nil
 	}
-	return nil, queryResultKindFailed, fmt.Errorf("lookup failed on all servers, query=%s, nameservers=%v", query, nameservers)
+	return nil, fmt.Errorf("lookup failed on all servers, query=%s, nameservers=%v", query, nameservers)
 }
 
-func (c *Resolver2) lookupRecursiveOne(ctx context.Context, pos *recursePosition, query *query, nameserver netip.Addr) (*dns.Msg, queryResultKind, error) {
+func (c *Resolver2) lookupRecursiveOne(ctx context.Context, pos *recursePosition, query *query, nameserver netip.Addr) (*dns.Msg, error) {
 	r, err := c.doQueryUDPWithTCPFallback(ctx, pos, query, nameserver)
 	if err != nil {
-		return nil, queryResultKindFailed, err
+		return nil, err
 	}
 	if r.Authoritative {
-		return r, queryResultKindGotAuthoritativeAnswer, nil
+		return r, nil
 	}
 	if len(r.Ns) == 0 {
-		return nil, queryResultKindFailed, fmt.Errorf("no authority in non-authoritative DNS query response, query=%s", query)
+		return nil, fmt.Errorf("no authority in non-authoritative DNS query response, query=%s", query)
 	}
 
 	addrs := getAddressesFromRRSet(r.Extra)
 	if len(addrs) == 0 {
-		return r, queryResultKindGotAuthorityWithoutExtra, nil
+		return r, nil
 	}
 	return c.lookupRecursiveMulti(ctx, pos.Depth+1, query, addrs)
 }
@@ -224,8 +217,8 @@ func (c *Resolver2) doQueryProto(ctx context.Context, pos *recursePosition, quer
 	m := dns.NewMsg(query.Name, query.QType)
 	m.RecursionDesired = false
 	respMsg, _, err := c.exchanger.Exchange(ctx, m, network, net.JoinHostPort(nameserver.String(), dnsPortStr))
-	if slog.Default().Enabled(ctx, slog.LevelDebug) {
-		slog.Debug("doQueryProto after exchange", "pos", pos, "query", query, "nameserver", nameserver, "protocol", protocol, "response", respMsg, "error", err)
+	if c.logger.Enabled(ctx, slog.LevelDebug) {
+		c.debug(ctx, "doQueryProto after exchange", "pos", pos, "query", query, "nameserver", nameserver, "protocol", protocol, "response", respMsg, "error", err)
 	}
 	if err != nil {
 		return nil, err
