@@ -95,7 +95,7 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	q := &query{Name: name, QType: dns.StringToType[qType]}
 	c.info(ctx, "LookupRecord start first round", "query", q)
 
-	r, k, err := c.lookupRecursiveMulti(ctx, q, c.rootNameservers)
+	r, k, err := c.lookupRecursiveMulti(ctx, 0, q, c.rootNameservers)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	nsQuery := &query{Name: firstNs.Ns, QType: dns.TypeA}
 	c.info(ctx, "LookupRecord start querying address of authority nameservers", "query", q, "nsQuery", nsQuery)
 
-	r2, k2, err := c.lookupRecursiveMulti(ctx, nsQuery, c.rootNameservers)
+	r2, k2, err := c.lookupRecursiveMulti(ctx, 0, nsQuery, c.rootNameservers)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	// do the requested query to authority nameservers.
 	nsAddrs := getAddressesFromRRSet(r2.Answer)
 	c.info(ctx, "LookupRecord start querying to authority nameserver", "query", q, "nsAddrs", nsAddrs)
-	r3, k3, err := c.lookupRecursiveMulti(ctx, q, nsAddrs)
+	r3, k3, err := c.lookupRecursiveMulti(ctx, 0, q, nsAddrs)
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +137,20 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	return r3.Answer, nil
 }
 
-func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, query *query, nameservers []netip.Addr) (*dns.Msg, queryResultKind, error) {
-	for _, ns := range nameservers {
-		r, k, err := c.lookupRecursiveOne(ctx, query, ns)
+type recursePosition struct {
+	Depth int `json:"depth"`
+	Index int `json:"index"`
+	Count int `json:"count"`
+}
+
+func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, depth int, query *query, nameservers []netip.Addr) (*dns.Msg, queryResultKind, error) {
+	pos := &recursePosition{
+		Depth: depth,
+		Count: len(nameservers),
+	}
+	for i, ns := range nameservers {
+		pos.Index = i
+		r, k, err := c.lookupRecursiveOne(ctx, pos, query, ns)
 		if err != nil {
 			c.warn(ctx, "lookup failed on one nameserver", "query", query, "nameserver", ns, "err", err)
 			continue
@@ -149,8 +160,8 @@ func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, query *query, name
 	return nil, queryResultKindFailed, fmt.Errorf("lookup failed on all servers, query=%s, nameservers=%v", query, nameservers)
 }
 
-func (c *Resolver2) lookupRecursiveOne(ctx context.Context, query *query, nameserver netip.Addr) (*dns.Msg, queryResultKind, error) {
-	r, err := c.doQueryUDPWithTCPFallback(ctx, query, nameserver)
+func (c *Resolver2) lookupRecursiveOne(ctx context.Context, pos *recursePosition, query *query, nameserver netip.Addr) (*dns.Msg, queryResultKind, error) {
+	r, err := c.doQueryUDPWithTCPFallback(ctx, pos, query, nameserver)
 	if err != nil {
 		return nil, queryResultKindFailed, err
 	}
@@ -165,7 +176,7 @@ func (c *Resolver2) lookupRecursiveOne(ctx context.Context, query *query, namese
 	if len(addrs) == 0 {
 		return r, queryResultKindGotAuthorityWithoutExtra, nil
 	}
-	return c.lookupRecursiveMulti(ctx, query, addrs)
+	return c.lookupRecursiveMulti(ctx, pos.Depth+1, query, addrs)
 }
 
 func getAddressesFromRRSet(rr []dns.RR) []netip.Addr {
@@ -192,27 +203,30 @@ func getAddrFromRR(rr dns.RR) (netip.Addr, bool) {
 	}
 }
 
-func (c *Resolver2) doQueryUDPWithTCPFallback(ctx context.Context, query *query, nameserver netip.Addr) (*dns.Msg, error) {
-	r, err := c.doQueryProto(ctx, query, nameserver, "udp")
+func (c *Resolver2) doQueryUDPWithTCPFallback(ctx context.Context, pos *recursePosition, query *query, nameserver netip.Addr) (*dns.Msg, error) {
+	r, err := c.doQueryProto(ctx, pos, query, nameserver, "udp")
 	if err != nil {
 		return nil, err
 	}
 	if !r.Truncated {
 		return r, nil
 	}
-	r, err = c.doQueryProto(ctx, query, nameserver, "tcp")
+	r, err = c.doQueryProto(ctx, pos, query, nameserver, "tcp")
 	if err != nil {
 		return nil, err
 	}
 	return r, nil
 }
 
-func (c *Resolver2) doQueryProto(ctx context.Context, query *query, nameserver netip.Addr, protocol string) (*dns.Msg, error) {
+func (c *Resolver2) doQueryProto(ctx context.Context, pos *recursePosition, query *query, nameserver netip.Addr, protocol string) (*dns.Msg, error) {
 	network := normalizeNetworkForAddr(protocol, nameserver)
 
 	m := dns.NewMsg(query.Name, query.QType)
 	m.RecursionDesired = false
 	respMsg, _, err := c.exchanger.Exchange(ctx, m, network, net.JoinHostPort(nameserver.String(), dnsPortStr))
+	if slog.Default().Enabled(ctx, slog.LevelDebug) {
+		slog.Debug("doQueryProto after exchange", "pos", pos, "query", query, "nameserver", nameserver, "protocol", protocol, "response", respMsg, "error", err)
+	}
 	if err != nil {
 		return nil, err
 	}
