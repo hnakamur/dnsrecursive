@@ -1,0 +1,2 @@
+cmd/dnsqueryrecorder/dnsqueryrecorder
+cmd/dnsqueryrecorder/*.yaml
