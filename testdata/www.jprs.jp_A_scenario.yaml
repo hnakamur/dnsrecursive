@@ -1,81 +1,84 @@
 name: Query www.jrps.jp A
 description: ''
-responses:
+exchanges:
 - query:
     nameserver: 202.12.27.33
     protocol: udp
     name: www.jprs.jp.
     qtype: A
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: jp., ttl: 172800, rtype: NS, rdata: f.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: b.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: h.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: g.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: a.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: c.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: e.dns.jp.}
-  - {name: jp., ttl: 172800, rtype: NS, rdata: d.dns.jp.}
-  extra:
-  - {name: h.dns.jp., ttl: 172800, rtype: A, rdata: 161.232.72.25}
-  - {name: g.dns.jp., ttl: 172800, rtype: A, rdata: 203.119.40.1}
-  - {name: f.dns.jp., ttl: 172800, rtype: A, rdata: 150.100.6.8}
-  - {name: e.dns.jp., ttl: 172800, rtype: A, rdata: 192.50.43.53}
-  - {name: d.dns.jp., ttl: 172800, rtype: A, rdata: 210.138.175.244}
-  - {name: c.dns.jp., ttl: 172800, rtype: A, rdata: 156.154.100.5}
-  - {name: b.dns.jp., ttl: 172800, rtype: A, rdata: 202.12.30.131}
-  - {name: a.dns.jp., ttl: 172800, rtype: A, rdata: 203.119.1.1}
-  - {name: h.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2a01:8840:1bc::25'}
-  - {name: f.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:2f8:0:100::153'}
-  - {name: e.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:200:c000::35'}
-  - {name: d.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:240::53'}
-  - {name: c.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:502:ad09::5'}
-  - {name: b.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:dc2::1'}
-  - {name: a.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:dc4::1'}
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: jp., ttl: 172800, rtype: NS, rdata: d.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: e.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: a.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: b.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: h.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: g.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: c.dns.jp.}
+    - {name: jp., ttl: 172800, rtype: NS, rdata: f.dns.jp.}
+    extra:
+    - {name: h.dns.jp., ttl: 172800, rtype: A, rdata: 161.232.72.25}
+    - {name: g.dns.jp., ttl: 172800, rtype: A, rdata: 203.119.40.1}
+    - {name: f.dns.jp., ttl: 172800, rtype: A, rdata: 150.100.6.8}
+    - {name: e.dns.jp., ttl: 172800, rtype: A, rdata: 192.50.43.53}
+    - {name: d.dns.jp., ttl: 172800, rtype: A, rdata: 210.138.175.244}
+    - {name: c.dns.jp., ttl: 172800, rtype: A, rdata: 156.154.100.5}
+    - {name: b.dns.jp., ttl: 172800, rtype: A, rdata: 202.12.30.131}
+    - {name: a.dns.jp., ttl: 172800, rtype: A, rdata: 203.119.1.1}
+    - {name: h.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2a01:8840:1bc::25'}
+    - {name: f.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:2f8:0:100::153'}
+    - {name: e.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:200:c000::35'}
+    - {name: d.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:240::53'}
+    - {name: c.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:502:ad09::5'}
+    - {name: b.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:dc2::1'}
+    - {name: a.dns.jp., ttl: 172800, rtype: AAAA, rdata: '2001:dc4::1'}
 - query:
     nameserver: 161.232.72.25
     protocol: udp
     name: www.jprs.jp.
     qtype: A
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns3.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns4.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns2.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns1.jprs.jp.}
-  extra:
-  - {name: ns1.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.49}
-  - {name: ns2.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.59}
-  - {name: ns3.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.178}
-  - {name: ns4.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.181}
-  - {name: ns1.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a153'}
-  - {name: ns2.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a253'}
-  - {name: ns3.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a153'}
-  - {name: ns4.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a253'}
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns4.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns1.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns2.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns3.jprs.jp.}
+    extra:
+    - {name: ns1.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.49}
+    - {name: ns2.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.59}
+    - {name: ns3.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.178}
+    - {name: ns4.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.181}
+    - {name: ns1.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a153'}
+    - {name: ns2.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a253'}
+    - {name: ns3.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a153'}
+    - {name: ns4.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a253'}
 - query:
     nameserver: 202.11.16.49
     protocol: udp
     name: www.jprs.jp.
     qtype: A
     flags: []
-  flags: [qr, aa]
-  answer:
-  - {name: www.jprs.jp., ttl: 300, rtype: A, rdata: 117.104.133.164}
-  ns:
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns1.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns2.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns3.jprs.jp.}
-  - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns4.jprs.jp.}
-  extra:
-  - {name: ns1.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.49}
-  - {name: ns2.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.59}
-  - {name: ns3.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.178}
-  - {name: ns4.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.181}
-  - {name: ns1.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a153'}
-  - {name: ns2.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a253'}
-  - {name: ns3.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a153'}
-  - {name: ns4.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a253'}
+  response:
+    flags: [qr, aa]
+    answer:
+    - {name: www.jprs.jp., ttl: 300, rtype: A, rdata: 117.104.133.164}
+    ns:
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns3.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns2.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns1.jprs.jp.}
+    - {name: jprs.jp., ttl: 86400, rtype: NS, rdata: ns4.jprs.jp.}
+    extra:
+    - {name: ns1.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.49}
+    - {name: ns2.jprs.jp., ttl: 86400, rtype: A, rdata: 202.11.16.59}
+    - {name: ns3.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.178}
+    - {name: ns4.jprs.jp., ttl: 86400, rtype: A, rdata: 203.105.65.181}
+    - {name: ns1.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a153'}
+    - {name: ns2.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:df0:8::a253'}
+    - {name: ns3.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a153'}
+    - {name: ns4.jprs.jp., ttl: 86400, rtype: AAAA, rdata: '2001:218:3001::a253'}

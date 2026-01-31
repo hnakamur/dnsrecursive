@@ -23,18 +23,18 @@ func NewMockClient(scenario Scenario) *MockClient {
 const dnsPortStr = "53"
 
 func (c *MockClient) Exchange(ctx context.Context, m *dns.Msg, network, address string) (r *dns.Msg, rtt time.Duration, err error) {
-	if c.step >= len(c.scenario.Responses) {
-		return nil, 0, fmt.Errorf("failed to exchange: unexpected to be called more than %d times", len(c.scenario.Responses))
+	if c.step >= len(c.scenario.Exchanges) {
+		return nil, 0, fmt.Errorf("failed to exchange: unexpected to be called more than %d times", len(c.scenario.Exchanges))
 	}
-	resp := &c.scenario.Responses[c.step]
+	xchg := &c.scenario.Exchanges[c.step]
 	c.step++
-	if err := resp.Query.chcekInput(m, network, address); err != nil {
+	if err := xchg.Query.chcekInput(m, network, address); err != nil {
 		return nil, 0, fmt.Errorf("failed to exchange: step=%d, err=%s", c.step, err)
 	}
 
-	if resp.Error != "" {
-		return nil, 0, errors.New(resp.Error)
+	if xchg.Response.Error != "" {
+		return nil, 0, errors.New(xchg.Response.Error)
 	}
-	r, err = resp.ToMsg(m)
+	r, err = xchg.Response.ToMsg(m)
 	return r, 0, err
 }

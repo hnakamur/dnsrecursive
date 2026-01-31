@@ -8,8 +8,12 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
+type Exchange struct {
+	Query    Query    `json:"query"`
+	Response Response `json:"response"`
+}
+
 type Response struct {
-	Query  Query    `json:"query"`
 	Flags  []string `json:"flags"`
 	Answer []Record `json:"answer"`
 	Ns     []Record `json:"ns"`
@@ -17,9 +21,15 @@ type Response struct {
 	Error  string   `json:"error,omitempty"`
 }
 
-func NewResponseFromMsg(nameserver netip.Addr, protocol string, m, r *dns.Msg) *Response {
+func NewExchangeFromMsg(nameserver netip.Addr, protocol string, m, r *dns.Msg) *Exchange {
+	return &Exchange{
+		Query:    *newQuery(nameserver, protocol, m),
+		Response: *NewResponseFromMsg(r),
+	}
+}
+
+func NewResponseFromMsg(r *dns.Msg) *Response {
 	return &Response{
-		Query:  *newQuery(nameserver, protocol, m),
 		Flags:  msgToFlags(r),
 		Answer: newRecords(r.Answer),
 		Ns:     newRecords(r.Ns),
@@ -103,11 +113,6 @@ func setHeaderFlagsByStrings(msg *dns.Msg, flags []string) {
 }
 
 func (r Response) MarshalYAML() (any, error) {
-	query, err := encodeYamlNode(r.Query)
-	if err != nil {
-		return nil, err
-	}
-
 	flags, err := encodeYamlNodeWithFlowStyle(r.Flags)
 	if err != nil {
 		return nil, err
@@ -129,8 +134,6 @@ func (r Response) MarshalYAML() (any, error) {
 	}
 
 	content := []*yaml.Node{
-		{Kind: yaml.ScalarNode, Value: "query"},
-		query,
 		{Kind: yaml.ScalarNode, Value: "flags"},
 		flags,
 		{Kind: yaml.ScalarNode, Value: "answer"},

@@ -51,7 +51,7 @@ func (r *Recorder) Run(ctx context.Context, input *RecorderInput) (*Scenario, er
 	s := &Scenario{
 		Name:        input.Name,
 		Description: input.Description,
-		Responses:   make([]Response, len(input.Queries)),
+		Exchanges:   make([]Exchange, len(input.Queries)),
 	}
 
 	for i, q := range input.Queries {
@@ -59,12 +59,12 @@ func (r *Recorder) Run(ctx context.Context, input *RecorderInput) (*Scenario, er
 		if err != nil {
 			return nil, err
 		}
-		s.Responses[i] = *resp
+		s.Exchanges[i] = *resp
 	}
 	return s, nil
 }
 
-func (r *Recorder) runQuery(ctx context.Context, q Query) (*Response, error) {
+func (r *Recorder) runQuery(ctx context.Context, q Query) (*Exchange, error) {
 	qtype, ok := dns.StringToType[q.QType]
 	if !ok {
 		return nil, fmt.Errorf("recorder failed to run query, unsupported qtype=%s", q.QType)
@@ -82,5 +82,5 @@ func (r *Recorder) runQuery(ctx context.Context, q Query) (*Response, error) {
 		return nil, fmt.Errorf("recorder failed to run query, %s", err)
 	}
 
-	return NewResponseFromMsg(addr, q.Protocol, m, respMsg), nil
+	return NewExchangeFromMsg(addr, q.Protocol, m, respMsg), nil
 }

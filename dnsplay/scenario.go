@@ -5,7 +5,7 @@ import "go.yaml.in/yaml/v4"
 type Scenario struct {
 	Name        string
 	Description string
-	Responses   []Response
+	Exchanges   []Exchange
 }
 
 func MustLoadScenario(p []byte) *Scenario {

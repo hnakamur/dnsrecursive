@@ -1,218 +1,226 @@
 name: Query www.ietf.org AAAA
 description: ''
-responses:
+exchanges:
 - query:
     nameserver: 198.41.0.4
     protocol: udp
     name: www.ietf.org.
     qtype: AAAA
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: org., ttl: 172800, rtype: NS, rdata: a2.org.afilias-nst.info.}
-  - {name: org., ttl: 172800, rtype: NS, rdata: b2.org.afilias-nst.org.}
-  - {name: org., ttl: 172800, rtype: NS, rdata: d0.org.afilias-nst.org.}
-  - {name: org., ttl: 172800, rtype: NS, rdata: a0.org.afilias-nst.info.}
-  - {name: org., ttl: 172800, rtype: NS, rdata: b0.org.afilias-nst.org.}
-  - {name: org., ttl: 172800, rtype: NS, rdata: c0.org.afilias-nst.info.}
-  extra:
-  - {name: a2.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.249.112.1}
-  - {name: a2.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:40::1'}
-  - {name: b2.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.249.120.1}
-  - {name: b2.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:48::1'}
-  - {name: d0.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.19.57.1}
-  - {name: d0.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:f::1'}
-  - {name: a0.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.19.56.1}
-  - {name: a0.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:e::1'}
-  - {name: b0.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.19.54.1}
-  - {name: b0.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:c::1'}
-  - {name: c0.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.19.53.1}
-  - {name: c0.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:b::1'}
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: org., ttl: 172800, rtype: NS, rdata: a2.org.afilias-nst.info.}
+    - {name: org., ttl: 172800, rtype: NS, rdata: b2.org.afilias-nst.org.}
+    - {name: org., ttl: 172800, rtype: NS, rdata: d0.org.afilias-nst.org.}
+    - {name: org., ttl: 172800, rtype: NS, rdata: a0.org.afilias-nst.info.}
+    - {name: org., ttl: 172800, rtype: NS, rdata: b0.org.afilias-nst.org.}
+    - {name: org., ttl: 172800, rtype: NS, rdata: c0.org.afilias-nst.info.}
+    extra:
+    - {name: a2.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.249.112.1}
+    - {name: a2.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:40::1'}
+    - {name: b2.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.249.120.1}
+    - {name: b2.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:48::1'}
+    - {name: d0.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.19.57.1}
+    - {name: d0.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:f::1'}
+    - {name: a0.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.19.56.1}
+    - {name: a0.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:e::1'}
+    - {name: b0.org.afilias-nst.org., ttl: 172800, rtype: A, rdata: 199.19.54.1}
+    - {name: b0.org.afilias-nst.org., ttl: 172800, rtype: AAAA, rdata: '2001:500:c::1'}
+    - {name: c0.org.afilias-nst.info., ttl: 172800, rtype: A, rdata: 199.19.53.1}
+    - {name: c0.org.afilias-nst.info., ttl: 172800, rtype: AAAA, rdata: '2001:500:b::1'}
 - query:
     nameserver: 199.249.112.1
     protocol: udp
     name: www.ietf.org.
     qtype: AAAA
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: ietf.org., ttl: 3600, rtype: NS, rdata: ken.ns.cloudflare.com.}
-  - {name: ietf.org., ttl: 3600, rtype: NS, rdata: jill.ns.cloudflare.com.}
-  extra: []
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: ietf.org., ttl: 3600, rtype: NS, rdata: ken.ns.cloudflare.com.}
+    - {name: ietf.org., ttl: 3600, rtype: NS, rdata: jill.ns.cloudflare.com.}
+    extra: []
 - query:
     nameserver: 198.41.0.4
     protocol: udp
     name: ken.ns.cloudflare.com.
     qtype: A
     flags: []
-  flags: [qr, tc]
-  answer: []
-  ns:
-  - {name: com., ttl: 172800, rtype: NS, rdata: l.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: j.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: h.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: d.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: b.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: f.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: k.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: m.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: i.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: g.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: a.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: c.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: e.gtld-servers.net.}
-  extra:
-  - {name: l.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.41.162.30}
-  - {name: l.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:d937::30'}
-  - {name: j.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.48.79.30}
-  - {name: j.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:7094::30'}
-  - {name: h.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.54.112.30}
-  - {name: h.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:8cc::30'}
-  - {name: d.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.31.80.30}
-  - {name: d.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:856e::30'}
-  - {name: b.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.33.14.30}
-  - {name: b.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:231d::2:30'}
-  - {name: f.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.35.51.30}
+  response:
+    flags: [qr, tc]
+    answer: []
+    ns:
+    - {name: com., ttl: 172800, rtype: NS, rdata: l.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: j.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: h.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: d.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: b.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: f.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: k.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: m.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: i.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: g.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: a.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: c.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: e.gtld-servers.net.}
+    extra:
+    - {name: l.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.41.162.30}
+    - {name: l.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:d937::30'}
+    - {name: j.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.48.79.30}
+    - {name: j.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:7094::30'}
+    - {name: h.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.54.112.30}
+    - {name: h.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:8cc::30'}
+    - {name: d.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.31.80.30}
+    - {name: d.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:856e::30'}
+    - {name: b.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.33.14.30}
+    - {name: b.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:231d::2:30'}
+    - {name: f.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.35.51.30}
 - query:
     nameserver: 198.41.0.4
     protocol: tcp
     name: ken.ns.cloudflare.com.
     qtype: A
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: com., ttl: 172800, rtype: NS, rdata: l.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: j.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: h.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: d.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: b.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: f.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: k.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: m.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: i.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: g.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: a.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: c.gtld-servers.net.}
-  - {name: com., ttl: 172800, rtype: NS, rdata: e.gtld-servers.net.}
-  extra:
-  - {name: l.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.41.162.30}
-  - {name: l.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:d937::30'}
-  - {name: j.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.48.79.30}
-  - {name: j.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:7094::30'}
-  - {name: h.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.54.112.30}
-  - {name: h.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:8cc::30'}
-  - {name: d.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.31.80.30}
-  - {name: d.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:856e::30'}
-  - {name: b.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.33.14.30}
-  - {name: b.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:231d::2:30'}
-  - {name: f.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.35.51.30}
-  - {name: f.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:d414::30'}
-  - {name: k.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.52.178.30}
-  - {name: k.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:d2d::30'}
-  - {name: m.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.55.83.30}
-  - {name: m.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:501:b1f9::30'}
-  - {name: i.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.43.172.30}
-  - {name: i.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:39c1::30'}
-  - {name: g.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.42.93.30}
-  - {name: g.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:eea3::30'}
-  - {name: a.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.5.6.30}
-  - {name: a.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:a83e::2:30'}
-  - {name: c.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.26.92.30}
-  - {name: c.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:83eb::30'}
-  - {name: e.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.12.94.30}
-  - {name: e.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:1ca1::30'}
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: com., ttl: 172800, rtype: NS, rdata: l.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: j.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: h.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: d.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: b.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: f.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: k.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: m.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: i.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: g.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: a.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: c.gtld-servers.net.}
+    - {name: com., ttl: 172800, rtype: NS, rdata: e.gtld-servers.net.}
+    extra:
+    - {name: l.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.41.162.30}
+    - {name: l.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:d937::30'}
+    - {name: j.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.48.79.30}
+    - {name: j.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:7094::30'}
+    - {name: h.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.54.112.30}
+    - {name: h.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:8cc::30'}
+    - {name: d.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.31.80.30}
+    - {name: d.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:500:856e::30'}
+    - {name: b.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.33.14.30}
+    - {name: b.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:231d::2:30'}
+    - {name: f.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.35.51.30}
+    - {name: f.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:d414::30'}
+    - {name: k.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.52.178.30}
+    - {name: k.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:d2d::30'}
+    - {name: m.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.55.83.30}
+    - {name: m.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:501:b1f9::30'}
+    - {name: i.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.43.172.30}
+    - {name: i.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:39c1::30'}
+    - {name: g.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.42.93.30}
+    - {name: g.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:eea3::30'}
+    - {name: a.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.5.6.30}
+    - {name: a.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:a83e::2:30'}
+    - {name: c.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.26.92.30}
+    - {name: c.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:503:83eb::30'}
+    - {name: e.gtld-servers.net., ttl: 172800, rtype: A, rdata: 192.12.94.30}
+    - {name: e.gtld-servers.net., ttl: 172800, rtype: AAAA, rdata: '2001:502:1ca1::30'}
 - query:
     nameserver: 192.41.162.30
     protocol: udp
     name: ken.ns.cloudflare.com.
     qtype: A
     flags: []
-  flags: [qr, tc]
-  answer: []
-  ns:
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns3.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns5.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns4.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns6.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns7.cloudflare.com.}
-  extra:
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.0.33}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.7.226}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:21'}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:7e2'}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.2.9}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.9.55}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:209'}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:937'}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.1.33}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.8.55}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:121'}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:837'}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.3.11}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.5.6}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:30b'}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:506'}
-  - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.4.8}
+  response:
+    flags: [qr, tc]
+    answer: []
+    ns:
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns3.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns5.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns4.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns6.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns7.cloudflare.com.}
+    extra:
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.0.33}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.7.226}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:21'}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:7e2'}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.2.9}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.9.55}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:209'}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:937'}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.1.33}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.8.55}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:121'}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:837'}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.3.11}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.5.6}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:30b'}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:506'}
+    - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.4.8}
 - query:
     nameserver: 192.41.162.30
     protocol: tcp
     name: ken.ns.cloudflare.com.
     qtype: A
     flags: []
-  flags: [qr]
-  answer: []
-  ns:
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns3.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns5.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns4.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns6.cloudflare.com.}
-  - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns7.cloudflare.com.}
-  extra:
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.0.33}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.7.226}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:21'}
-  - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:7e2'}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.2.9}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.9.55}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:209'}
-  - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:937'}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.1.33}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.8.55}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:121'}
-  - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:837'}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.3.11}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.5.6}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:30b'}
-  - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:506'}
-  - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.4.8}
-  - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.6.6}
-  - {name: ns7.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:408'}
-  - {name: ns7.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:606'}
+  response:
+    flags: [qr]
+    answer: []
+    ns:
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns3.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns5.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns4.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns6.cloudflare.com.}
+    - {name: cloudflare.com., ttl: 172800, rtype: NS, rdata: ns7.cloudflare.com.}
+    extra:
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.0.33}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.7.226}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:21'}
+    - {name: ns3.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:7e2'}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.2.9}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.9.55}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:209'}
+    - {name: ns5.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:937'}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.1.33}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.8.55}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:121'}
+    - {name: ns4.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:837'}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.3.11}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.5.6}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:30b'}
+    - {name: ns6.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:506'}
+    - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.4.8}
+    - {name: ns7.cloudflare.com., ttl: 172800, rtype: A, rdata: 162.159.6.6}
+    - {name: ns7.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:408'}
+    - {name: ns7.cloudflare.com., ttl: 172800, rtype: AAAA, rdata: '2400:cb00:2049:1::a29f:606'}
 - query:
     nameserver: 162.159.0.33
     protocol: udp
     name: ken.ns.cloudflare.com.
     qtype: A
     flags: []
-  flags: [qr, aa]
-  answer:
-  - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 172.64.33.127}
-  - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 173.245.59.127}
-  - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 108.162.193.127}
-  ns: []
-  extra: []
+  response:
+    flags: [qr, aa]
+    answer:
+    - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 173.245.59.127}
+    - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 108.162.193.127}
+    - {name: ken.ns.cloudflare.com., ttl: 86353, rtype: A, rdata: 172.64.33.127}
+    ns: []
+    extra: []
 - query:
-    nameserver: 172.64.33.127
+    nameserver: 173.245.59.127
     protocol: udp
     name: www.ietf.org.
     qtype: AAAA
     flags: []
-  flags: [qr, aa]
-  answer:
-  - {name: www.ietf.org., ttl: 300, rtype: AAAA, rdata: '2606:4700::6810:2d63'}
-  - {name: www.ietf.org., ttl: 300, rtype: AAAA, rdata: '2606:4700::6810:2c63'}
-  ns: []
-  extra: []
+  response:
+    flags: [qr, aa]
+    answer:
+    - {name: www.ietf.org., ttl: 300, rtype: AAAA, rdata: '2606:4700::6810:2c63'}
+    - {name: www.ietf.org., ttl: 300, rtype: AAAA, rdata: '2606:4700::6810:2d63'}
+    ns: []
+    extra: []
