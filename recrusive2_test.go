@@ -21,12 +21,12 @@ func TestResolver2(t *testing.T) {
 		name              string
 		qType             string
 	}{
-		// {
-		// 	scenarioFilename:  "testdata/www.jprs.jp_A_scenario.yaml",
-		// 	rootServerAddress: "202.12.27.33",
-		// 	name:              "www.jprs.jp.",
-		// 	qType:             "A",
-		// },
+		{
+			scenarioFilename:  "testdata/www.jprs.jp_A_scenario.yaml",
+			rootServerAddress: "202.12.27.33",
+			name:              "www.jprs.jp.",
+			qType:             "A",
+		},
 		{
 			scenarioFilename:  "testdata/www.ietf.org_AAAA_scenario.yaml",
 			rootServerAddress: "198.41.0.4",
@@ -35,6 +35,7 @@ func TestResolver2(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
+		slog.Debug("=== testcase start ===")
 		scenarioBytes, err := os.ReadFile(tc.scenarioFilename)
 		if err != nil {
 			log.Fatal(err)

@@ -213,7 +213,20 @@ func (c *Resolver2) doQueryProto(ctx context.Context, query *query, nameserver n
 	m := dns.NewMsg(query.Name, query.QType)
 	m.RecursionDesired = false
 	respMsg, _, err := c.exchanger.Exchange(ctx, m, network, net.JoinHostPort(nameserver.String(), dnsPortStr))
-	return respMsg, err
+	if err != nil {
+		return nil, err
+	}
+
+	// Check response ID matches the query ID.
+	//
+	// http://ietf.org/rfc/rfc1034.txt
+	// 5.3.3. Algorithm
+	// It should also check that the response matches the query it
+	// sent using the ID field in the response.
+	if respMsg.ID != m.ID {
+		return nil, errors.New("response ID does not match query ID")
+	}
+	return respMsg, nil
 }
 
 func normalizeNetworkForAddr(protocol string, addr netip.Addr) string {
