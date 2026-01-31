@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"codeberg.org/miekg/dns"
@@ -33,7 +33,10 @@ func (c *MockClient) Exchange(ctx context.Context, m *dns.Msg, network, address 
 		return nil, 0, fmt.Errorf("failed to exchange: step=%d, err=%s", c.step, err)
 	}
 
-	log.Printf("MockClient.Exchange, step=%d, resp=%+v", c.step-1, resp)
+	if slog.Default().Enabled(ctx, slog.LevelDebug) {
+		slog.Debug("MockClient.Exchange returns response", "step", c.step-1, "response", resp)
+	}
+
 	if resp.Error != "" {
 		return nil, 0, errors.New(resp.Error)
 	}

@@ -9,12 +9,12 @@ import (
 )
 
 type Response struct {
-	Query  Query
-	Flags  []string
-	Answer []Record
-	Ns     []Record
-	Extra  []Record
-	Error  string
+	Query  Query    `json:"query"`
+	Flags  []string `json:"flags"`
+	Answer []Record `json:"answer"`
+	Ns     []Record `json:"ns"`
+	Extra  []Record `json:"extra"`
+	Error  string   `json:"error,omitempty"`
 }
 
 func NewResponseFromMsg(nameserver netip.Addr, protocol string, m, r *dns.Msg) *Response {

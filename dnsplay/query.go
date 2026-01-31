@@ -12,11 +12,11 @@ import (
 )
 
 type Query struct {
-	Nameserver string
-	Protocol   string
-	Name       string
-	QType      string
-	Flags      []string `yaml:",flow"`
+	Nameserver string   `json:"nameserver"`
+	Protocol   string   `json:"protocol"`
+	Name       string   `json:"name"`
+	QType      string   `json:"qtype"`
+	Flags      []string `json:"flags" yaml:",flow"`
 }
 
 func newQuery(nameserver netip.Addr, protocol string, m *dns.Msg) *Query {

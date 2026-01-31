@@ -11,10 +11,10 @@ import (
 )
 
 type Record struct {
-	Name  string
-	TTL   uint32
-	RType string
-	RData string
+	Name  string `json:"name"`
+	TTL   uint32 `json:"ttl"`
+	RType string `json:"rtype"`
+	RData string `json:"rdata"`
 }
 
 func newRecords(rr []dns.RR) []Record {

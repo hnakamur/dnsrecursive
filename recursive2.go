@@ -2,9 +2,10 @@ package dnsrecursive
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"net"
 	"net/netip"
 	"strings"
@@ -12,6 +13,8 @@ import (
 
 	"codeberg.org/miekg/dns"
 )
+
+const dnsPortStr = "53"
 
 // query Q1 to root server
 // while got ns and additional:
@@ -29,25 +32,54 @@ type Exchanger interface {
 	Exchange(ctx context.Context, m *dns.Msg, network, address string) (r *dns.Msg, rtt time.Duration, err error)
 }
 
+type Logger interface {
+	Log(ctx context.Context, level slog.Level, msg string, args ...any)
+}
+
+type Option func(r *Resolver2)
+
 type Resolver2 struct {
 	exchanger       Exchanger
 	rootNameservers []netip.Addr
+	logger          Logger
 }
 
-func NewResolver2(exchanger Exchanger, rootNameservers []netip.Addr) *Resolver2 {
-	return &Resolver2{
+func NewResolver2(exchanger Exchanger, rootNameservers []netip.Addr, opts ...Option) *Resolver2 {
+	r := &Resolver2{
 		exchanger:       exchanger,
 		rootNameservers: rootNameservers,
+		logger:          slog.Default(),
+	}
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
+}
+
+func WithLogger(logger Logger) Option {
+	return func(r *Resolver2) {
+		r.logger = logger
 	}
 }
 
 type query struct {
-	Name  string
-	QType uint16
+	Name  string `json:"name"`
+	QType uint16 `json:"qtype"`
 }
 
 func (q *query) String() string {
 	return fmt.Sprintf("%s %s", q.Name, dns.TypeToString[q.QType])
+}
+
+func (q *query) MarshalJSON() ([]byte, error) {
+	query := struct {
+		Name  string `json:"name"`
+		QType string `json:"qtype"`
+	}{
+		Name:  q.Name,
+		QType: dns.TypeToString[q.QType],
+	}
+	return json.Marshal(query)
 }
 
 type queryResultKind int
@@ -59,9 +91,10 @@ const (
 )
 
 func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns.RR, error) {
-	log.Printf("dnsrecursive.Client.LookupRecord start, name=%s, qType=%s", name, qType)
 	// do the requested query from root servers.
 	q := &query{Name: name, QType: dns.StringToType[qType]}
+	c.info(ctx, "LookupRecord start first round", "query", q)
+
 	r, k, err := c.lookupRecursiveMulti(ctx, q, c.rootNameservers)
 	if err != nil {
 		return nil, err
@@ -78,9 +111,10 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 	if !ok {
 		return nil, fmt.Errorf("authority record type is not NS, record=%s", r.Ns[0])
 	}
-	log.Printf("dnsrecursive.Client.LookupRecord query for nameserver address, name=%s, qType=%s", firstNs.Ns, "A")
 
 	nsQuery := &query{Name: firstNs.Ns, QType: dns.TypeA}
+	c.info(ctx, "LookupRecord start querying address of authority nameservers", "query", q, "nsQuery", nsQuery)
+
 	r2, k2, err := c.lookupRecursiveMulti(ctx, nsQuery, c.rootNameservers)
 	if err != nil {
 		return nil, err
@@ -91,7 +125,7 @@ func (c *Resolver2) LookupRecord(ctx context.Context, name, qType string) ([]dns
 
 	// do the requested query to authority nameservers.
 	nsAddrs := getAddressesFromRRSet(r2.Answer)
-	log.Printf("dnsrecursive.Client.LookupRecord query to authority nameserver, name=%s, qType=%s, nsAddrs=%v", name, qType, nsAddrs)
+	c.info(ctx, "LookupRecord start querying to authority nameserver", "query", q, "nsAddrs", nsAddrs)
 	r3, k3, err := c.lookupRecursiveMulti(ctx, q, nsAddrs)
 	if err != nil {
 		return nil, err
@@ -107,7 +141,7 @@ func (c *Resolver2) lookupRecursiveMulti(ctx context.Context, query *query, name
 	for _, ns := range nameservers {
 		r, k, err := c.lookupRecursiveOne(ctx, query, ns)
 		if err != nil {
-			log.Printf("lookup failed on one server, query=%s, nameserver=%s, continue to next server, err=%s", query, ns, err)
+			c.warn(ctx, "lookup failed on one nameserver", "query", query, "nameserver", ns, "err", err)
 			continue
 		}
 		return r, k, nil
@@ -173,8 +207,6 @@ func (c *Resolver2) doQueryUDPWithTCPFallback(ctx context.Context, query *query,
 	return r, nil
 }
 
-const dnsPortStr = "53"
-
 func (c *Resolver2) doQueryProto(ctx context.Context, query *query, nameserver netip.Addr, protocol string) (*dns.Msg, error) {
 	network := normalizeNetworkForAddr(protocol, nameserver)
 
@@ -192,4 +224,20 @@ func normalizeNetworkForAddr(protocol string, addr netip.Addr) string {
 		return protocol + "4"
 	}
 	return protocol + "6"
+}
+
+func (c *Resolver2) debug(ctx context.Context, msg string, args ...any) {
+	c.logger.Log(ctx, slog.LevelDebug, msg, args...)
+}
+
+func (c *Resolver2) info(ctx context.Context, msg string, args ...any) {
+	c.logger.Log(ctx, slog.LevelInfo, msg, args...)
+}
+
+func (c *Resolver2) warn(ctx context.Context, msg string, args ...any) {
+	c.logger.Log(ctx, slog.LevelWarn, msg, args...)
+}
+
+func (c *Resolver2) log(ctx context.Context, level slog.Level, msg string, args ...any) {
+	c.logger.Log(ctx, level, msg, args...)
 }
