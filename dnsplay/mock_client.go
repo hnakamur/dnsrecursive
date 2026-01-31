@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"codeberg.org/miekg/dns"
@@ -14,8 +15,8 @@ type MockClient struct {
 	step     int
 }
 
-func NewFakeClient(scenario Scenario) MockClient {
-	return MockClient{
+func NewMockClient(scenario Scenario) *MockClient {
+	return &MockClient{
 		scenario: scenario,
 	}
 }
@@ -32,6 +33,7 @@ func (c *MockClient) Exchange(ctx context.Context, m *dns.Msg, network, address 
 		return nil, 0, fmt.Errorf("failed to exchange: step=%d, err=%s", c.step, err)
 	}
 
+	log.Printf("MockClient.Exchange, step=%d, resp=%+v", c.step-1, resp)
 	if resp.Error != "" {
 		return nil, 0, errors.New(resp.Error)
 	}

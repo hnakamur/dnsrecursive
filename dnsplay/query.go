@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/netip"
 	"slices"
+	"strings"
 
 	"codeberg.org/miekg/dns"
 )
@@ -44,7 +45,7 @@ func (q *Query) chcekInput(m *dns.Msg, network, address string) error {
 	if host != q.Nameserver {
 		return fmt.Errorf("nameserver address mismatch, got=%s, want=%s", host, q.Nameserver)
 	}
-	if network != q.Protocol {
+	if normalizeNetworkForAddr(network, address) != normalizeNetworkForAddr(q.Protocol, q.Nameserver) {
 		return fmt.Errorf("protocol mismatch, got=%s, want=%s", network, q.Protocol)
 	}
 
@@ -63,4 +64,14 @@ func (q *Query) chcekInput(m *dns.Msg, network, address string) error {
 		return fmt.Errorf("query message flags mismatch, got=%v, want=%v", inputFlags, q.Flags)
 	}
 	return nil
+}
+
+func normalizeNetworkForAddr(protocol, address string) string {
+	if strings.HasSuffix(protocol, "4") || strings.HasSuffix(protocol, "6") {
+		return protocol
+	}
+	if netip.MustParseAddr(address).Is4() {
+		return protocol + "4"
+	}
+	return protocol + "6"
 }
